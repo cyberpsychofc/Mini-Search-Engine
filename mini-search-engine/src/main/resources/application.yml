@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: mini-search-engine
+crawler:
+  user-agent: "MiniSearchBot/1.0 (+https://omaryan.vercel.app)"
