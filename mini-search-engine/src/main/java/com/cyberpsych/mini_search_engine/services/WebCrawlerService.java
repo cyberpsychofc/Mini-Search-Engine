@@ -21,7 +21,7 @@ public class WebCrawlerService {
         logger.info("Fetching URL: {}",url);
         Document doc = Jsoup.connect(url).userAgent(userAgent).get();
         logger.debug("Fetched document from {} with title: {}",url, doc.title());
-        return Jsoup.connect(url).get();
+        return doc;
     }
     public Set<String> extractLinks(String url) throws IOException{
         logger.info("Extracting links from {}",url);
