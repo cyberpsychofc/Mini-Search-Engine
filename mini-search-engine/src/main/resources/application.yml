@@ -1,5 +1,18 @@
 spring:
   application:
     name: mini-search-engine
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
 crawler:
   user-agent: "MiniSearchBot/1.0 (+https://omaryan.vercel.app)"
+logging:
+  level:
+    com.cyberpsych.mini_search_engine: INFO
+    org.springframework: WARN
