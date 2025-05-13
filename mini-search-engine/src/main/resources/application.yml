@@ -10,6 +10,10 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 crawler:
   user-agent: "MiniSearchBot/1.0 (+https://omaryan.vercel.app)"
 logging:
