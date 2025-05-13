@@ -3,3 +3,7 @@ spring:
     name: mini-search-engine
 crawler:
   user-agent: "MiniSearchBot/1.0 (+https://omaryan.vercel.app)"
+logging:
+  level:
+    com.cyberpsych.mini_search_engine: INFO
+    org.springframework: WARN
