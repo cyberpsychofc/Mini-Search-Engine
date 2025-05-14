@@ -16,6 +16,7 @@ spring:
       path: /h2-console
 crawler:
   user-agent: "MiniSearchBot/1.0 (+https://omaryan.vercel.app)"
+  rate-limit: 1.0
 logging:
   level:
     com.cyberpsych.mini_search_engine: INFO
