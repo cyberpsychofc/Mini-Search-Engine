@@ -6,10 +6,9 @@ import com.cyberpsych.mini_search_engine.services.WebCrawlerService;
 import com.google.common.util.concurrent.RateLimiter;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -21,7 +20,6 @@ import java.io.IOException;
 import java.util.Set;
 
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class WebcrawlerServiceTest {
 
     @Autowired
