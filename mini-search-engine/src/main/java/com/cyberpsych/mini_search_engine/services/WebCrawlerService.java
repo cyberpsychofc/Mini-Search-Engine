@@ -1,4 +1,5 @@
 package com.cyberpsych.mini_search_engine.services;
+
 import com.cyberpsych.mini_search_engine.entities.Link;
 import com.cyberpsych.mini_search_engine.entities.Page;
 import com.cyberpsych.mini_search_engine.repositories.LinkRepository;
@@ -12,10 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,13 +25,15 @@ public class WebCrawlerService {
     private final PageRepository pageRepository;
     private final LinkRepository linkRepository;
     private final RateLimiter rateLimiter;
+    private final TextProcessorService textProcessorService;
 
     private static final Logger logger = LoggerFactory.getLogger(WebCrawlerService.class);
 
-    public WebCrawlerService(PageRepository pageRepository, LinkRepository linkRepository, RateLimiter rateLimiter){
+    public WebCrawlerService(PageRepository pageRepository, LinkRepository linkRepository, RateLimiter rateLimiter, TextProcessorService textProcessorService){
         this.pageRepository = pageRepository;
         this.linkRepository = linkRepository;
         this.rateLimiter = rateLimiter;
+        this.textProcessorService = textProcessorService;
     }
 
     public boolean isAllowedByRobots(String url) {
@@ -118,6 +118,9 @@ public class WebCrawlerService {
 
             try{
                 Set<String> links = extractLinks(currentPage.getUrl());
+                Document doc = fetchPage(currentPage.getUrl());
+                List<String> tokens = textProcessorService.processText(doc.html());
+                logger.info("Processed {} tokens from {}: {}", tokens.size(), currentPage.getUrl(), tokens);
                 for (String linkUrl : links){
                     if (!visited.contains(linkUrl)){
                         
