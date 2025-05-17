@@ -19,13 +19,13 @@ public class TextProcessorServiceTest {
         String html = """
             <html>
             <body>
-                <p>The quick brown fox jumps over the lazy dog.</p>
+                <p>The quick brown fox is running over the lazy dog.</p>
             </body>
             </html>
             """;
         List<String> tokens = textProcessorService.processText(html);
         assertThat(tokens).containsExactly(
-                "quick", "brown", "fox", "jumps", "lazy", "dog"
+                "quick", "brown", "fox", "run", "lazi", "dog"
         );
     }
 }
