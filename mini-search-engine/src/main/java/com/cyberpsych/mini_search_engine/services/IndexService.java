@@ -1,8 +1,10 @@
 package com.cyberpsych.mini_search_engine.services;
 
 import com.cyberpsych.mini_search_engine.entities.Page;
+import com.cyberpsych.mini_search_engine.entities.PostingEntity;
 import com.cyberpsych.mini_search_engine.models.Posting;
 import com.cyberpsych.mini_search_engine.repositories.PageRepository;
+import com.cyberpsych.mini_search_engine.repositories.PostingRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import java.util.Map;
 @Service
 public class IndexService {
     private static final Logger logger = LoggerFactory.getLogger(IndexService.class);
+    private final PostingRepository postingRepository;
 
     @Value("${crawler.user-agent}")
     private String userAgent;
@@ -27,9 +31,10 @@ public class IndexService {
     private final PageRepository pageRepository;
     private final TextProcessorService textProcessorService;
 
-    public IndexService(PageRepository pageRepository, TextProcessorService textProcessorService){
+    public IndexService(PageRepository pageRepository, TextProcessorService textProcessorService, PostingRepository postingRepository){
         this.pageRepository = pageRepository;
         this.textProcessorService = textProcessorService;
+        this.postingRepository = postingRepository;
     }
     public void addPosting(String term, Posting posting){
         invertedIndex.computeIfAbsent(term, k-> new ArrayList<>()).add(posting);
@@ -48,11 +53,15 @@ public class IndexService {
     }
 
     @Scheduled(fixedDelay = 300000)
+    @Transactional
     public void buildIndex(){
         logger.info("Starting Inverted Index Build");
         clearIndex();
+        postingRepository.deleteAll();
 
         List<Page> pages = pageRepository.findAll();
+        List<PostingEntity> postingsToSave = new ArrayList<>();
+
         for (Page page: pages){
             try {
                 Document doc = Jsoup.connect(page.getUrl())
@@ -62,18 +71,36 @@ public class IndexService {
 
                 List<String> tokens = textProcessorService.processText(doc.html());
 
+                Map<String, List<Integer>> termPositions = new HashMap<>();
                 for (int i=0; i < tokens.size(); i++){
                     String term = tokens.get(i);
-                    List<Integer> positions = new ArrayList<>();
-                    positions.add(i + 1);
+                    termPositions.computeIfAbsent(
+                            term,
+                            k -> new ArrayList<>()
+                    ).add(i + 1);
+                }
+
+                for (Map.Entry<String, List<Integer>> entry : termPositions.entrySet()){
+                    String term = entry.getKey();
+                    List<Integer> positions = entry.getValue();
+
+                    //In-memory index
                     Posting posting = new Posting(page.getId(), positions);
                     addPosting(term, posting);
+
+                    //Persistent posting
+                    PostingEntity postingEntity = new PostingEntity();
+                    postingEntity.setTerm(term);
+                    postingEntity.setPageId(page.getId());
+                    postingEntity.setPositions(positions);
+                    postingsToSave.add(postingEntity);
                 }
             }
             catch (IOException e){
                 logger.error("Error indexing page {}: {}", page.getUrl(), e.getMessage());
             }
         }
-        logger.info("Inverted index built with {} terms", invertedIndex.size());
+        postingRepository.saveAll(postingsToSave);
+        logger.info("Inverted index built with {} terms, saved {} postings", invertedIndex.size(), postingsToSave.size());
     }
 }

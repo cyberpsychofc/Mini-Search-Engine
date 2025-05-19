@@ -2,7 +2,7 @@ package com.cyberpsych.mini_search_engine.repository;
 
 import com.cyberpsych.mini_search_engine.entities.Page;
 import com.cyberpsych.mini_search_engine.repositories.PageRepository;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import static org.assertj.core.api.Assertions.assertThat;

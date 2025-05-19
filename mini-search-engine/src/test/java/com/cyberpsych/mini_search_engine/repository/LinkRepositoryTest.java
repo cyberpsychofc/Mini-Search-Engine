@@ -4,7 +4,7 @@ import com.cyberpsych.mini_search_engine.entities.Link;
 import com.cyberpsych.mini_search_engine.entities.Page;
 import com.cyberpsych.mini_search_engine.repositories.LinkRepository;
 import com.cyberpsych.mini_search_engine.repositories.PageRepository;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +40,7 @@ public class LinkRepositoryTest {
         assertThat(savedLink.getTo().getUrl()).isEqualTo("https://example.org");
 
         //find by ID
-        Link foundLink = new Link();
+        Link foundLink = linkRepository.findById(savedLink.getId()).orElse(null);
         assertThat(foundLink).isNotNull();
         assertThat(foundLink.getFrom().getUrl()).isEqualTo("https://example.com");
     }
