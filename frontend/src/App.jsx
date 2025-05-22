@@ -27,7 +27,7 @@ function App() {
       setResults(data);
     } catch (err) {
       if (err.name === 'TypeError') {
-        setError('No server available to serve your request');
+        setError('No server available to handle your request');
       } else {
         setError(err.message);
       }
@@ -38,8 +38,8 @@ function App() {
   };
 
   return (
-    <div className="container pt-25 pl-6 pr-6 text-white md:pr-0 md:pl-0 md:pt-18 dark:bg-gray-900 dark:text-white bg-gray-100 text-gray-900">
-      <h1 className="text-4xl md:text-5xl py-4 md:py-10 font-bold font-sans bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">
+    <div className="container pt-25 pl-6 pr-6 md:pr-0 md:pl-0 md:pt-18 dark:bg-gray-900 dark:text-white bg-gray-100 text-gray-900">
+      <h1 className="text-4xl transition-shadow duration-100 drop-shadow-[0_0_1px_#61afef] md:text-5xl py-4 md:py-10 font-bold font-sans bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">
         Mini Search Engine
       </h1>
 
@@ -48,10 +48,10 @@ function App() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Enter your search query"
+          placeholder="Search Anything"
           className="search-input"
         />
-        <button type="submit" className="search-button" disabled={loading}>
+        <button type="submit" className="search-button" disabled={loading || !query.trim()}>
           {loading ? 'Searching...' : 'Search'}
         </button>
       </form>

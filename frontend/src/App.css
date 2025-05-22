@@ -29,21 +29,58 @@ body {
 .search-button {
   padding: 10px 20px;
   font-size: 16px;
-  background-color: #007bff;
+  background-color: #002774;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
+.search-button:hover {
+  background-color: #0661b6;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
 .search-button:disabled {
-  background-color: #6c757d;
+  background-color: #233342;
   cursor: not-allowed;
 }
 
 .error {
-  color: red;
-  text-align: center;
+  background-color: #920000; /* light red */
+  color: #ffe0e0; /* strong red text */
+  border: 1px solid #920000; /* light red border */
+  padding: 24px;
+  border-radius: 16px;
+  border-color: #dc2626;
+  margin-bottom: 24px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.error-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #b91c1c;
+}
+
+.error-icon {
+  width: 24px;
+  height: 24px;
+  color: #dc2626;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.error-message {
+  color: #b91c1c;
+  margin: 0;
+  font-size: 1rem;
 }
 
 .results {
