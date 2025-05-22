@@ -6,6 +6,7 @@ function App() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -13,9 +14,12 @@ function App() {
 
     setLoading(true);
     setError(null);
+    setHasSearched(true);
 
     try {
-      const response = await fetch(`http://localhost:8080/api/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch(
+        `http://localhost:8080/api/search?q=${encodeURIComponent(query)}`
+      );
       if (!response.ok) {
         throw new Error('Search request failed');
       }
@@ -34,8 +38,11 @@ function App() {
   };
 
   return (
-    <div className="container">
-      <h1>Mini Search Engine</h1>
+    <div className="container pt-25 pl-6 pr-6 text-white md:pr-0 md:pl-0 md:pt-18 dark:bg-gray-900 dark:text-white bg-gray-100 text-gray-900">
+      <h1 className="text-4xl md:text-5xl py-4 md:py-10 font-bold font-sans bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">
+        Mini Search Engine
+      </h1>
+
       <form onSubmit={handleSearch} className="search-form">
         <input
           type="text"
@@ -64,7 +71,7 @@ function App() {
             ))}
           </ul>
         ) : (
-          !loading && !error && <p>No results found.</p>
+          !loading && !error && hasSearched && <p>No results found.</p>
         )}
       </div>
     </div>
