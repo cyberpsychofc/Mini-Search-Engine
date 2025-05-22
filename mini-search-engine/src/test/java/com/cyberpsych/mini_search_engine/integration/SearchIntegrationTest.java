@@ -81,10 +81,6 @@ public class SearchIntegrationTest {
 
     @Test
     void shouldCrawlIndexAndSearch() throws Exception {
-        mockWebServer.enqueue(new MockResponse()
-                .setBody("User-agent: *\nAllow: /")
-                .addHeader("Content-Type", "text/plain"));
-
         String pageUrl = mockWebServer.url("/page1").toString();
         String html = """
                 <html>
@@ -95,6 +91,14 @@ public class SearchIntegrationTest {
                 </html>
                 """;
 
+        mockWebServer.enqueue(new MockResponse()
+                .setBody(html)
+                .addHeader("Content-Type", "text/html"));
+
+        // spare responses since my indexer and crawlers are running sequentially
+        mockWebServer.enqueue(new MockResponse()
+                .setBody(html)
+                .addHeader("Content-Type", "text/html"));
         mockWebServer.enqueue(new MockResponse()
                 .setBody(html)
                 .addHeader("Content-Type", "text/html"));
@@ -110,6 +114,14 @@ public class SearchIntegrationTest {
         mockWebServer.enqueue(new MockResponse()
                 .setBody(htmlpage2)
                 .addHeader("Content-Type", "text/html"));
+        // spare responses since my indexer and crawlers are running sequentially
+        mockWebServer.enqueue(new MockResponse()
+                .setBody(htmlpage2)
+                .addHeader("Content-Type", "text/html"));
+        mockWebServer.enqueue(new MockResponse()
+                .setBody(htmlpage2)
+                .addHeader("Content-Type", "text/html"));
+
 
         //integration
         webCrawlerService.crawl(pageUrl);
@@ -117,8 +129,8 @@ public class SearchIntegrationTest {
 
         // verify db transactions
         List<Page> pages = pageRepository.findAll();
-        assertThat(pages).hasSize(1);
-        assertThat(pages).extracting(Page::getUrl).contains(pageUrl); // add page2Url
+        assertThat(pages).hasSize(2);
+        assertThat(pages).extracting(Page::getUrl).contains(pageUrl, page2Url); // add page2Url
 
         List<PostingEntity> postings = postingRepository.findAll();
         assertThat(postings).isNotEmpty();
@@ -128,8 +140,8 @@ public class SearchIntegrationTest {
         mockMvc.perform(get("/api/search?q=quick fox"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].url").value(pageUrl))
-                .andExpect(jsonPath("$[0].score").exists());
-                //.andExpect(jsonPath("$[1].url").value(page2Url))
-                //.andExpect(jsonPath("$[1].score").exists());
+                .andExpect(jsonPath("$[0].score").exists())
+                .andExpect(jsonPath("$[1].url").value(page2Url))
+                .andExpect(jsonPath("$[1].score").exists());
     }
 }
