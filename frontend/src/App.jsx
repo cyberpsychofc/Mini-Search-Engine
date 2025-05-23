@@ -76,10 +76,9 @@ function App() {
   const currentResults = results.slice(startIndex, endIndex);
 
   return (
-    <div className="container pt-25 pl-6 pr-6 md:pr-0 md:pl-0 md:pt-18 dark:bg-gray-900 dark:text-white bg-gray-100 text-gray-900">
-      <h1 className="text-4xl transition-shadow duration-100 md:text-5xl py-4 md:py-10 font-bold font-sans bg-gradient-to-r from-blue-400 via-blue-8
-00 to-indigo-800 inline-block text-transparent bg-clip-text">
-        Mini Search Engine
+    <div className="container pt-25 pl-6 pr-6 md:pr-0 md:pl-0 md:pt-18 dark:bg-gray-900 dark:text-white bg-gray-100 text-gray-900 flex flex-col min-h-screen">
+      <h1 className="text-4xl transition-shadow duration-100 md:text-6xl py-4 pb-8 md:py-10 font-bold font-sans bg-gradient-to-r from-blue-400 via-blue-800 to-indigo-800 inline-block text-transparent bg-clip-text">
+        MiniSearchEngine
       </h1>
 
       <form onSubmit={handleSearch} className="search-form relative">
@@ -91,7 +90,7 @@ function App() {
           className="search-input w-full"
         />
         {suggestions.length > 0 && (
-          <ul className="absolute z-10 translate-y-[40px] w-[280px] md:w-[735px] bg-white dark:bg-gray-500 mt-1 border border-gray-200 dark:border-gray-700 rounded-md max-h-60 overflow-auto">
+          <ul className="absolute z-10 translate-y-[40px] w-[295px] md:w-[730px] bg-white dark:bg-gray-500 mt-1 border border-gray-200 dark:border-gray-700 rounded-md max-h-60 overflow-auto">
             {suggestions.map((suggestion, index) => (
               <li
                 key={index}
@@ -111,8 +110,12 @@ function App() {
           {loading ? '◌' : '→'}
         </button>
       </form>
-
-      <div className="results mt-6">
+      { results.length == 0 && !error &&(
+      <div className="mt-2 text-center text-sky-700">
+        <p className="italic">Ready to search? Let's go!</p>
+      </div>)
+      }
+      <div className="results mt-6 flex-grow">
         {loading && <p>Loading...</p>}
         {error && <p className="error">{error}</p>}
         {!loading && !error && results.length > 0 && (
@@ -137,7 +140,7 @@ function App() {
                 <button
                   onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
+                  className="nav px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
                 >
                   {'<'}
                 </button>
@@ -147,7 +150,7 @@ function App() {
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
+                  className="nav px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
                 >
                   {'>'}
                 </button>
@@ -159,6 +162,11 @@ function App() {
           <p>No results found.</p>
         )}
       </div>
+      <footer className="mt-10 text-center">
+        <p className="text-sm pb-5 font-sans text-gray-500 dark:text-gray-400">
+          Built on <img src="../public/spring.svg" alt="Spring Logo" className="inline-block w-6 h-6"/> & <img src="../public/react.svg" alt="React Logo" className="inline-block w-6 h-6"/>
+        </p>
+      </footer>
     </div>
   );
 }

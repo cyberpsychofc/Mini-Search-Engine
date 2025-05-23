@@ -2,9 +2,10 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding-right: 18px;
+  z-index: -1;
 }
 * {
- /* border: 1px solid #ff0000;*/
+ /*border: 1px solid #ff0000;*/
   background-color: #101828;
 }
 
@@ -23,6 +24,7 @@ body {
   flex: 1;
   padding: 10px;
   font-size: 16px;
+  background-color: #1c2a48;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
@@ -117,4 +119,11 @@ body {
   background-color: #041a47;
   margin: 5px 0;
   color: #ffffff;
+}
+
+.nav {
+  cursor: pointer;
+}
+.nav:disabled{
+  cursor: not-allowed;
 }
