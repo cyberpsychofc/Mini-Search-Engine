@@ -21,4 +21,9 @@ public class SearchController {
             String q){
         return searchService.search(q);
     }
+
+    @GetMapping("/api/autocomplete")
+    public List<String> autocomplete(@RequestParam String q){
+        return searchService.autocomplete(q);
+    }
 }

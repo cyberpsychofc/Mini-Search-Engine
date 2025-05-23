@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SearchService {
@@ -63,5 +64,17 @@ public class SearchService {
 
         logger.info("Found {} results for query : {}", results.size(), query);
         return results;
+    }
+    public List<String> autocomplete(String query){
+        logger.info("Processing autocomplete query: {}", query);
+        if (query == null || query.trim().isEmpty())
+            return new ArrayList<>();
+
+        String prefix = query.trim().toLowerCase();
+        List<String> suggestions = postingRepository.findTermsByPrefix(prefix);
+        logger.info("Found {} suggestions for prefix: {}", suggestions.size(), prefix);
+        return suggestions.stream()
+                .limit(10)
+                .collect(Collectors.toList());
     }
 }

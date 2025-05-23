@@ -39,4 +39,15 @@ public class SearchControllerTest {
                 .andExpect(jsonPath("$[1].url").value("https://example.com"))
                 .andExpect(jsonPath("$[1].score").value(1.0));
     }
+    @Test
+    void shouldReturnAutoCompleteSuggestions() throws Exception {
+        List<String> suggestions = List.of("quick", "quickly", "quiet");
+        when(searchService.autocomplete("qui")).thenReturn(suggestions);
+
+        mockMvc.perform(get("/api/autocomplete?q=qui"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]").value("quick"))
+                .andExpect(jsonPath("$[1]").value("quickly"))
+                .andExpect(jsonPath("$[2]").value("quiet"));
+    }
 }
