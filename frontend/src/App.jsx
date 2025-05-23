@@ -164,7 +164,7 @@ function App() {
       </div>
       <footer className="mt-10 text-center">
         <p className="text-sm pb-5 font-sans text-gray-500 dark:text-gray-400">
-          Built on <img src="../public/spring.svg" alt="Spring Logo" className="inline-block w-6 h-6"/> & <img src="../public/react.svg" alt="React Logo" className="inline-block w-6 h-6"/>
+          Built on <img src="/spring.svg" alt="Spring Logo" className="inline-block w-6 h-6"/> & <img src="/react.svg" alt="React Logo" className="inline-block w-6 h-6"/>
         </p>
       </footer>
     </div>
