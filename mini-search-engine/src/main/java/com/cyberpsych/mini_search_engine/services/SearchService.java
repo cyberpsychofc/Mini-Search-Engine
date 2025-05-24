@@ -1,8 +1,10 @@
 package com.cyberpsych.mini_search_engine.services;
 
 import com.cyberpsych.mini_search_engine.entities.PostingEntity;
+import com.cyberpsych.mini_search_engine.entities.TermFrequencyEntity;
 import com.cyberpsych.mini_search_engine.repositories.PageRepository;
 import com.cyberpsych.mini_search_engine.repositories.PostingRepository;
+import com.cyberpsych.mini_search_engine.repositories.TermFrequencyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,25 +22,32 @@ public class SearchService {
     private final TextProcessorService textProcessorService;
     private final PostingRepository postingRepository;
     private final PageRepository pageRepository;
+    private final TermFrequencyRepository termFrequencyRepository;
 
-    public SearchService(TextProcessorService textProcessorService, PostingRepository postingRepository, PageRepository pageRepository){
+    public SearchService(TextProcessorService textProcessorService, PostingRepository postingRepository, PageRepository pageRepository, TermFrequencyRepository termFrequencyRepository){
         this.textProcessorService = textProcessorService;
         this.postingRepository = postingRepository;
         this.pageRepository = pageRepository;
+        this.termFrequencyRepository = termFrequencyRepository;
     }
     public List<Map<String, Object>> search(String query){
         logger.info("Processing search query : {}",query);
 
         List<String> queryTokens = textProcessorService.processText(query);
-
+        long totalDocuments = pageRepository.count();
         Map<Long, Double> pageScores = new HashMap<>();
+
         for (String term : queryTokens){
             List<PostingEntity> postings = postingRepository.findByTerm(term);
+            TermFrequencyEntity tfEntity = termFrequencyRepository.findById(term).orElse(null);
+
+            double idf = (tfEntity != null && tfEntity.getDocumentFrequency() > 0) ? Math.log((double) totalDocuments / tfEntity.getDocumentFrequency()) : 0.0;
 
             for (PostingEntity posting : postings){
                 // term freq
                 double tf = posting.getPositions().size();
-                pageScores.merge(posting.getPageId(), tf, Double::sum);
+                double tf_idf = tf * idf;
+                pageScores.merge(posting.getPageId(), tf_idf, Double::sum);
             }
         }
 
