@@ -2,9 +2,11 @@ package com.cyberpsych.mini_search_engine.services;
 
 import com.cyberpsych.mini_search_engine.entities.Page;
 import com.cyberpsych.mini_search_engine.entities.PostingEntity;
+import com.cyberpsych.mini_search_engine.entities.TermFrequencyEntity;
 import com.cyberpsych.mini_search_engine.models.Posting;
 import com.cyberpsych.mini_search_engine.repositories.PageRepository;
 import com.cyberpsych.mini_search_engine.repositories.PostingRepository;
+import com.cyberpsych.mini_search_engine.repositories.TermFrequencyRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class IndexService {
@@ -29,10 +32,12 @@ public class IndexService {
     private String userAgent;
     private final Map<String, List<Posting>> invertedIndex = new HashMap<>();
     private final PageRepository pageRepository;
+    private final TermFrequencyRepository termFrequencyRepository;
     private final TextProcessorService textProcessorService;
 
-    public IndexService(PageRepository pageRepository, TextProcessorService textProcessorService, PostingRepository postingRepository){
+    public IndexService(PageRepository pageRepository, TermFrequencyRepository termFrequencyRepository, TextProcessorService textProcessorService, PostingRepository postingRepository){
         this.pageRepository = pageRepository;
+        this.termFrequencyRepository = termFrequencyRepository;
         this.textProcessorService = textProcessorService;
         this.postingRepository = postingRepository;
     }
@@ -52,15 +57,17 @@ public class IndexService {
         logger.info("Inverted index cleared.");
     }
 
-    @Scheduled(fixedDelay = 300000)
+    @Scheduled(fixedDelay = 30000)
     @Transactional
     public void buildIndex(){
         logger.info("Starting Inverted Index Build");
         clearIndex();
         postingRepository.deleteAll();
+        termFrequencyRepository.deleteAll();
 
         List<Page> pages = pageRepository.findAll();
         List<PostingEntity> postingsToSave = new ArrayList<>();
+        Map<String, Long> termDocCounts = new HashMap<>();
 
         for (Page page: pages){
             try {
@@ -78,6 +85,7 @@ public class IndexService {
                             term,
                             k -> new ArrayList<>()
                     ).add(i + 1);
+                    termDocCounts.merge(term, 1L, (a, b) -> a);
                 }
 
                 for (Map.Entry<String, List<Integer>> entry : termPositions.entrySet()){
@@ -101,6 +109,16 @@ public class IndexService {
             }
         }
         postingRepository.saveAll(postingsToSave);
-        logger.info("Inverted index built with {} terms, saved {} postings", invertedIndex.size(), postingsToSave.size());
+
+        List<TermFrequencyEntity> termFrequencies = termDocCounts.entrySet().stream()
+                        .map(entry -> {
+                            TermFrequencyEntity tf = new TermFrequencyEntity();
+                            tf.setTerm(entry.getKey());
+                            tf.setDocumentFrequency(entry.getValue());
+                            return tf;
+                        })
+                .collect(Collectors.toList());
+        termFrequencyRepository.saveAll(termFrequencies);
+        logger.info("Inverted index built with {} terms, saved {} postings, {} term frequencies", invertedIndex.size(), postingsToSave.size(), termFrequencies.size());
     }
 }
