@@ -1,7 +1,9 @@
 package com.cyberpsych.mini_search_engine.services;
 
+import com.cyberpsych.mini_search_engine.entities.PageRankEntity;
 import com.cyberpsych.mini_search_engine.entities.PostingEntity;
 import com.cyberpsych.mini_search_engine.entities.TermFrequencyEntity;
+import com.cyberpsych.mini_search_engine.repositories.PageRankRepository;
 import com.cyberpsych.mini_search_engine.repositories.PageRepository;
 import com.cyberpsych.mini_search_engine.repositories.PostingRepository;
 import com.cyberpsych.mini_search_engine.repositories.TermFrequencyRepository;
@@ -23,12 +25,14 @@ public class SearchService {
     private final PostingRepository postingRepository;
     private final PageRepository pageRepository;
     private final TermFrequencyRepository termFrequencyRepository;
+    private final PageRankRepository pageRankRepository;
 
-    public SearchService(TextProcessorService textProcessorService, PostingRepository postingRepository, PageRepository pageRepository, TermFrequencyRepository termFrequencyRepository){
+    public SearchService(TextProcessorService textProcessorService, PostingRepository postingRepository, PageRepository pageRepository, TermFrequencyRepository termFrequencyRepository, PageRankRepository pageRankRepository){
         this.textProcessorService = textProcessorService;
         this.postingRepository = postingRepository;
         this.pageRepository = pageRepository;
         this.termFrequencyRepository = termFrequencyRepository;
+        this.pageRankRepository = pageRankRepository;
     }
     public List<Map<String, Object>> search(String query){
         logger.info("Processing search query : {}",query);
@@ -52,16 +56,20 @@ public class SearchService {
         }
 
         // formatting response
+        // pagerank w/ TF-IDF
         List<Map<String, Object>> results = new ArrayList<>();
         for (Map.Entry<Long, Double> entry : pageScores.entrySet()){
             Long pageId = entry.getKey();
-            Double score = entry.getValue();
+            Double tfIdfscore = entry.getValue();
+            PageRankEntity prEntity = pageRankRepository.findById(pageId).orElse(null);
+            double pageRankScore = prEntity != null ? prEntity.getPageRankScore() : 1.0 / totalDocuments;
+            double finalScore = tfIdfscore * pageRankScore;
 
             pageRepository.findById(pageId).ifPresent(
                     page -> {
                         Map<String, Object> result = new HashMap<>();
                         result.put("url", page.getUrl());
-                        result.put("score", score);
+                        result.put("score", finalScore);
                         results.add(result);
                     }
             );
