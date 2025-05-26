@@ -26,14 +26,17 @@ public class SearchService {
     private final PageRepository pageRepository;
     private final TermFrequencyRepository termFrequencyRepository;
     private final PageRankRepository pageRankRepository;
+    private final SynonymService synonymService;
 
-    public SearchService(TextProcessorService textProcessorService, PostingRepository postingRepository, PageRepository pageRepository, TermFrequencyRepository termFrequencyRepository, PageRankRepository pageRankRepository){
+    public SearchService(TextProcessorService textProcessorService, PostingRepository postingRepository, PageRepository pageRepository, TermFrequencyRepository termFrequencyRepository, PageRankRepository pageRankRepository, SynonymService synonymService){
         this.textProcessorService = textProcessorService;
         this.postingRepository = postingRepository;
         this.pageRepository = pageRepository;
         this.termFrequencyRepository = termFrequencyRepository;
         this.pageRankRepository = pageRankRepository;
+        this.synonymService = synonymService;
     }
+
     public List<Map<String, Object>> search(String query){
         logger.info("Processing search query : {}",query);
 
@@ -41,7 +44,16 @@ public class SearchService {
         long totalDocuments = pageRepository.count();
         Map<Long, Double> pageScores = new HashMap<>();
 
-        for (String term : queryTokens){
+        List<String> expandedTokens = new ArrayList<>();
+        for (String token : queryTokens) {
+            List<String> synonyms = synonymService.getSynonyms(token).stream()
+                    .map(syn -> textProcessorService.processText(syn).get(0))
+                    .collect(Collectors.toList());
+            expandedTokens.addAll(synonyms);
+        }
+        logger.info("Expanded query tokens : {}", expandedTokens);
+
+        for (String term : expandedTokens){
             List<PostingEntity> postings = postingRepository.findByTerm(term);
             TermFrequencyEntity tfEntity = termFrequencyRepository.findById(term).orElse(null);
 
