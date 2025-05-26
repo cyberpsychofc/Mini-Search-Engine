@@ -76,7 +76,7 @@ function App() {
   const currentResults = results.slice(startIndex, endIndex);
 
   return (
-    <div className="container pt-25 pl-6 pr-6 md:pr-0 md:pl-0 md:pt-18 dark:bg-gray-900 dark:text-white bg-gray-100 text-gray-900 flex flex-col min-h-screen">
+    <div className="container pt-25 pl-6 pr-1 md:pr-0 md:pl-0 md:pt-18 dark:bg-gray-900 dark:text-white bg-gray-100 text-gray-900 flex flex-col min-h-screen">
       <a href="https://github.com/cyberpsychofc/Mini-Search-Engine"
     class="absolute top-0 right-0 m-4 mr-5 w-10 h-10 bg-primary/10 border border-blue-900 rounded text-primary flex items-center justify-center hover:bg-primary/20 transition-colors duration-200 group">
   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
