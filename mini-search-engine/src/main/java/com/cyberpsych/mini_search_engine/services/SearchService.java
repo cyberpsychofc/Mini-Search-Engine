@@ -9,12 +9,15 @@ import com.cyberpsych.mini_search_engine.repositories.PostingRepository;
 import com.cyberpsych.mini_search_engine.repositories.TermFrequencyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,18 +30,38 @@ public class SearchService {
     private final TermFrequencyRepository termFrequencyRepository;
     private final PageRankRepository pageRankRepository;
     private final SynonymService synonymService;
+    private final RedisTemplate<String, List<Map<String, Object>>> searchRedisTemplate;
+    private final RedisTemplate<String, List<String>> autocompleteRedisTemplate;
 
-    public SearchService(TextProcessorService textProcessorService, PostingRepository postingRepository, PageRepository pageRepository, TermFrequencyRepository termFrequencyRepository, PageRankRepository pageRankRepository, SynonymService synonymService){
+    public SearchService(TextProcessorService textProcessorService,
+                         PostingRepository postingRepository,
+                         PageRepository pageRepository,
+                         TermFrequencyRepository termFrequencyRepository,
+                         PageRankRepository pageRankRepository,
+                         SynonymService synonymService,
+                         @Qualifier("searchRedisTemplate") RedisTemplate<String, List<Map<String, Object>>> searchRedisTemplate,
+                         @Qualifier("autocompleteRedisTemplate") RedisTemplate<String, List<String>> autocompleteRedisTemplate){
         this.textProcessorService = textProcessorService;
         this.postingRepository = postingRepository;
         this.pageRepository = pageRepository;
         this.termFrequencyRepository = termFrequencyRepository;
         this.pageRankRepository = pageRankRepository;
         this.synonymService = synonymService;
+        this.searchRedisTemplate = searchRedisTemplate;
+        this.autocompleteRedisTemplate = autocompleteRedisTemplate;
     }
 
     public List<Map<String, Object>> search(String query){
-        logger.info("Processing search query : {}",query);
+        logger.info("Processing search query : {}", query);
+        String cacheKey = "search:" + query.trim().toLowerCase();
+        List<Map<String, Object>> cachedResults = searchRedisTemplate.opsForValue().get(cacheKey);
+
+        if (cachedResults != null && !(cachedResults.isEmpty())){
+            logger.info("Cache hit for query: {}", query);
+            return cachedResults;
+        }
+
+        logger.info("Cache miss for query: {}. Performing search...", query);
 
         List<String> queryTokens = textProcessorService.processText(query);
         long totalDocuments = pageRepository.count();
@@ -92,18 +115,28 @@ public class SearchService {
         ));
 
         logger.info("Found {} results for query : {}", results.size(), query);
+        searchRedisTemplate.opsForValue().set(cacheKey, results, 10, TimeUnit.MINUTES);
         return results;
     }
     public List<String> autocomplete(String query){
         logger.info("Processing autocomplete query: {}", query);
+        String cacheKey = "autocomplete:" + query.trim().toLowerCase();
+        List<String> cachedSuggestions = autocompleteRedisTemplate.opsForValue().get(cacheKey);
+        if (cachedSuggestions != null && !(cachedSuggestions.isEmpty())){
+            logger.info("Cache hit for autocomplete query: {}", query);
+            return cachedSuggestions;
+        }
+
+        logger.info("Cache miss for autocomplete query: {}. Fetching from database...", query);
         if (query == null || query.trim().isEmpty())
             return new ArrayList<>();
 
         String prefix = query.trim().toLowerCase();
         List<String> suggestions = postingRepository.findTermsByPrefix(prefix);
         logger.info("Found {} suggestions for prefix: {}", suggestions.size(), prefix);
-        return suggestions.stream()
-                .limit(10)
-                .collect(Collectors.toList());
+        List<String> limitedSuggestions = suggestions.stream().limit(10).collect(Collectors.toList());
+
+        autocompleteRedisTemplate.opsForValue().set(cacheKey, limitedSuggestions, 5, TimeUnit.MINUTES);
+        return limitedSuggestions;
     }
 }
