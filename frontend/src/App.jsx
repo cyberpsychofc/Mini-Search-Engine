@@ -30,10 +30,11 @@ function App() {
     };
   })();
 
+  // Ping the backend every 10 minutes
   useEffect(() => {
     const wakeUpPulse = async () => {
       try {
-        await axios.get('http://localhost:8080/ping');
+        await axios.get('https://mini-search-engine-0595.onrender.com/ping');
         console.log('Server is awake');
       } catch (err) {
         setError('No server available to handle your request');
