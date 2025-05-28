@@ -2,10 +2,10 @@ spring:
   application:
     name: mini-search-engine
   datasource:
-    url: jdbc:h2:mem:testdb
-    driverClassName: org.h2.Driver
-    username: sa
-    password:
+    url: ${SPRING_NEON_URL}
+    username: ${SPRING_NEON_USER}
+    password: ${SPRING_NEON_PASSWORD}
+    driverClassName: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -14,6 +14,8 @@ spring:
       hibernate:
         jdbc:
           batch_size: 50
+          lob:
+            non_contextual_creation: true
         order_inserts: true
         order_updates: true
   h2:
