@@ -42,7 +42,7 @@ function App() {
 
     wakeUpPulse();
 
-    const intervalId = setInterval(wakeUpPulse, 6000);
+    const intervalId = setInterval(wakeUpPulse, 10 * 60 * 1000);
     return () => clearInterval(intervalId);
   }, []);
 
