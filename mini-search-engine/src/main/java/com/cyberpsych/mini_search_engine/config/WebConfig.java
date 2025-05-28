@@ -15,7 +15,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry corsRegistry) {
                 corsRegistry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173", "https://mini-search-engine-git-develop-cyberpsychofcs-projects.vercel.app")
+                        .allowedOrigins("http://localhost:5173", "https://mini-search-engine.vercel.app")
                         .allowedMethods(HttpMethod.OPTIONS.name(), HttpMethod.GET.name(), HttpMethod.POST.name())
                         .allowedHeaders(HttpHeaders.CONTENT_TYPE,
                                 HttpHeaders.AUTHORIZATION)
