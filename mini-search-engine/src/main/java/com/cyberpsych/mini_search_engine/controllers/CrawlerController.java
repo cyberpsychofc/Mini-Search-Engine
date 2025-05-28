@@ -4,9 +4,6 @@ import com.cyberpsych.mini_search_engine.services.WebCrawlerService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(
-        origins = "https://https://mini-search-engine.vercel.app",
-        methods = {RequestMethod.GET, RequestMethod.OPTIONS})
 public class CrawlerController {
     private final WebCrawlerService webCrawlerService;
 

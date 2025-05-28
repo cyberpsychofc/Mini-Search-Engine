@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(
-        origins = "https://https://mini-search-engine.vercel.app",
-        methods = {RequestMethod.GET, RequestMethod.OPTIONS})
 public class SearchController {
     private final SearchService searchService;
 
