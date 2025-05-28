@@ -39,7 +39,7 @@ function App() {
     const fetchSuggestions = async () => {
       try {
         const response = await axios.get(
-          `https://mini-search-engine-0595.onrender.com/api/autocomplete?q=${encodeURIComponent(query)}`
+          `http://localhost:8080/api/autocomplete?q=${encodeURIComponent(query)}`
         );
         setSuggestions(response.data);
       } catch (err) {
@@ -63,7 +63,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `https://mini-search-engine-0595.onrender.com/api/search?q=${encodeURIComponent(query)}`
+        `http://localhost:8080/api/search?q=${encodeURIComponent(query)}`
       );
       if (!response.ok) {
         throw new Error('Search request failed');
