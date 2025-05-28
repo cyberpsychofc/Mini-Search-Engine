@@ -57,7 +57,7 @@ public class IndexService {
         logger.info("Inverted index cleared.");
     }
 
-    @Scheduled(fixedDelay = 30000)  // Set larger value in production
+    @Scheduled(fixedDelay = 360000)  // Set larger value in production
     @Transactional
     public void buildIndex(){
         logger.info("Starting Inverted Index Build");

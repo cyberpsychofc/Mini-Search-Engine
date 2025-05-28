@@ -11,6 +11,7 @@ function App() {
   const [hasSearched, setHasSearched] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+
   const crawlOnce = (() => {
     let hasCrawled = false;
 
@@ -28,6 +29,22 @@ function App() {
       }
     };
   })();
+
+  useEffect(() => {
+    const wakeUpPulse = async () => {
+      try {
+        await axios.get('http://localhost:8080/ping');
+        console.log('Server is awake');
+      } catch (err) {
+        setError('No server available to handle your request');
+      }
+    }
+
+    wakeUpPulse();
+
+    const intervalId = setInterval(wakeUpPulse, 6000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   // Fetch autocomplete suggestions
   useEffect(() => {
