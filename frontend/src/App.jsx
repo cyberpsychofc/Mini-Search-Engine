@@ -39,7 +39,7 @@ function App() {
     const fetchSuggestions = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/autocomplete?q=${encodeURIComponent(query)}`
+          `https://mini-search-engine-x3xj.onrender.com/api/autocomplete?q=${encodeURIComponent(query)}`
         );
         setSuggestions(response.data);
       } catch (err) {
