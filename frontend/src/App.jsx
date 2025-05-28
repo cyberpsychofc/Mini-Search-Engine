@@ -29,10 +29,6 @@ function App() {
     };
   })();
 
-  useEffect(() => {
-    crawlOnce();
-  }, []);
-
   // Fetch autocomplete suggestions
   useEffect(() => {
     if (query.trim() === '') {
