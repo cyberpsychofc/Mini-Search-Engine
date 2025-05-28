@@ -39,7 +39,8 @@ function App() {
     const fetchSuggestions = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/autocomplete?q=${encodeURIComponent(query)}`
+          `http://localhost:8080/api/autocomplete?q=${encodeURIComponent(query)}`,
+          { withCredentials: true }
         );
         setSuggestions(response.data);
       } catch (err) {
