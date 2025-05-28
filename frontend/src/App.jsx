@@ -11,6 +11,7 @@ function App() {
   const [hasSearched, setHasSearched] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+
   const crawlOnce = (() => {
     let hasCrawled = false;
 
@@ -28,6 +29,23 @@ function App() {
       }
     };
   })();
+
+  // Ping the backend every 10 minutes
+  useEffect(() => {
+    const wakeUpPulse = async () => {
+      try {
+        await axios.get('https://mini-search-engine-0595.onrender.com/ping');
+        console.log('Server is awake');
+      } catch (err) {
+        setError('No server available to handle your request');
+      }
+    }
+
+    wakeUpPulse();
+
+    const intervalId = setInterval(wakeUpPulse, 10 * 60 * 1000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   // Fetch autocomplete suggestions
   useEffect(() => {
