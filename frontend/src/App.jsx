@@ -11,6 +11,28 @@ function App() {
   const [hasSearched, setHasSearched] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const crawlOnce = (() => {
+    let hasCrawled = false;
+
+    return async () => {
+      if (hasCrawled) return;
+      hasCrawled = true;
+
+      try {
+        await axios.get(
+          'https://mini-search-engine-x3xj.onrender.com/crawl?seedUrl=https://open.spotify.com'
+        );
+        console.log('Crawl initiated successfully.');
+      } catch (err) {
+        console.error('Crawl error:', err);
+      }
+    };
+  })();
+
+  useEffect(() => {
+    crawlOnce();
+  }, []);
+
   // Fetch autocomplete suggestions
   useEffect(() => {
     if (query.trim() === '') {
@@ -21,7 +43,7 @@ function App() {
     const fetchSuggestions = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/autocomplete?q=${encodeURIComponent(query)}`
+          `https://mini-search-engine-x3xj.onrender.com/api/autocomplete?q=${encodeURIComponent(query)}`
         );
         setSuggestions(response.data);
       } catch (err) {
@@ -45,7 +67,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/search?q=${encodeURIComponent(query)}`
+        `https://mini-search-engine-x3xj.onrender.com/api/search?q=${encodeURIComponent(query)}`
       );
       if (!response.ok) {
         throw new Error('Search request failed');
