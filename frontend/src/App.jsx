@@ -34,7 +34,7 @@ function App() {
   useEffect(() => {
     const checkPulse = async () => {
       try {
-        await axios.get('https://mini-search-engine-0595.onrender.com/ping');
+        await axios.get('https://mini-search-engine-r47g.onrender.com/ping');
       } catch (err) {
         setError('No server available to handle your request');
       }
@@ -53,7 +53,7 @@ function App() {
     const fetchSuggestions = async () => {
       try {
         const response = await axios.get(
-          `https://mini-search-engine-0595.onrender.com/api/autocomplete?q=${encodeURIComponent(query)}`,
+          `https://mini-search-engine-r47g.onrender.com/api/autocomplete?q=${encodeURIComponent(query)}`,
           { withCredentials: true }
         );
         setSuggestions(response.data);
@@ -78,7 +78,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `https://mini-search-engine-0595.onrender.com/api/search?q=${encodeURIComponent(query)}`
+        `https://mini-search-engine-r47g.onrender.com/api/search?q=${encodeURIComponent(query)}`
       );
       if (!response.ok) {
         throw new Error('Search request failed');
