@@ -35,7 +35,7 @@ public class PageRankService {
         this.pageRankRepository = pageRankRepository;
     }
 
-    @Scheduled(fixedDelay = 15000)
+    @Scheduled(fixedDelay = 300000)
     @Transactional
     public void calculatePageRank() {
         logger.info("Starting PageRank calculation");

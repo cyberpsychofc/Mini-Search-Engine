@@ -2,8 +2,6 @@ spring:
   application:
     name: mini-search-engine
   datasource:
-    hikari:
-      max-lifetime: 50
     url: ${SPRING_NEON_URL}
     username: ${SPRING_NEON_USER}
     password: ${SPRING_NEON_PASSWORD}
