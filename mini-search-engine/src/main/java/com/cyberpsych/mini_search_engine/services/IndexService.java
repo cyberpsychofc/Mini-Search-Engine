@@ -57,7 +57,7 @@ public class IndexService {
         logger.info("Inverted index cleared.");
     }
 
-    @Scheduled(fixedDelay = 360000)  // Set larger value in production
+    @Scheduled(fixedDelay = 3600000)  // Set larger value in production
     @Transactional
     public void buildIndex(){
         logger.info("Starting Inverted Index Build");
@@ -81,6 +81,8 @@ public class IndexService {
                 Map<String, List<Integer>> termPositions = new HashMap<>();
                 for (int i=0; i < tokens.size(); i++){
                     String term = tokens.get(i);
+                    if (term.length() > 255)
+                        continue;
                     termPositions.computeIfAbsent(
                             term,
                             k -> new ArrayList<>()
