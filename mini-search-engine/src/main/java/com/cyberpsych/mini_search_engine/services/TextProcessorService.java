@@ -39,6 +39,7 @@ public class TextProcessorService {
                 .filter(token -> !token.isEmpty())
                 .filter(token -> !stopWords.contains(token))
                 .map(this::stemToken)
+                .limit(100)
                 .collect(Collectors.toList());
         logger.debug("Processed tokens: {}", stemmedTokens);
         return stemmedTokens;

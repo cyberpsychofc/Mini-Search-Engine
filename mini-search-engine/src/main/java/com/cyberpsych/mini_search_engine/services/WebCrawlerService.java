@@ -100,6 +100,8 @@ public class WebCrawlerService {
     public void crawl(String seedUrl){
         Queue<Page> queue = new LinkedList<>();
         Set<String> visited = new HashSet<>();
+        int crawledPages = 0;
+        final int MAX_PAGES = 10;
 
         Page seedPage = new Page();
         seedPage.setUrl(seedUrl);
@@ -113,7 +115,7 @@ public class WebCrawlerService {
         queue.add(seedPage);
         visited.add(seedUrl);
 
-        while(!queue.isEmpty()){
+        while(!queue.isEmpty() && crawledPages < MAX_PAGES){
             Page currentPage = queue.poll();
 
             try{
@@ -121,15 +123,18 @@ public class WebCrawlerService {
                 Document doc = fetchPage(currentPage.getUrl());
                 List<String> tokens = textProcessorService.processText(doc.html());
                 logger.info("Processed {} tokens from {}: {}", tokens.size(), currentPage.getUrl(), tokens);
+
+                crawledPages++;
+                logger.info("Crawled {} / {} pages", crawledPages, MAX_PAGES);
+
                 for (String linkUrl : links){
-                    if (!visited.contains(linkUrl)){
-                        
-                        //save linked page
+                    if (!visited.contains(linkUrl) && crawledPages < MAX_PAGES){
+                        // save linked page
                         Page linkedPage = new Page();
                         linkedPage.setUrl(linkUrl);
                         linkedPage = pageRepository.save(linkedPage);
 
-                        //save link relationship
+                        // save link relationship
                         Link link = new Link();
                         link.setFrom(currentPage);
                         link.setTo(linkedPage);
@@ -145,5 +150,6 @@ public class WebCrawlerService {
                 logger.error("Error crawling {}",currentPage.getUrl(), e.getMessage());
             }
         }
+        logger.info("Crawl completed. Total pages crawled: {}", crawledPages);
     }
 }
