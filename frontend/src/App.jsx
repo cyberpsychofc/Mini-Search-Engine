@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './App.css';
 
@@ -10,7 +10,8 @@ function App() {
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [selection, setSelection] = useState(-1);
+  const isSelecting = useRef(false);
 
   const crawlOnce = (() => {
     let hasCrawled = false;
@@ -30,7 +31,6 @@ function App() {
     };
   })();
 
-  // Check if the backend server is online
   useEffect(() => {
     const checkPulse = async () => {
       try {
@@ -43,10 +43,15 @@ function App() {
     checkPulse();
   }, []);
 
-  // Fetch autocomplete suggestions
   useEffect(() => {
     if (query.trim() === '') {
       setSuggestions([]);
+      return;
+    }
+
+    // Skip fetching suggestions if a suggestion was just selected
+    if (isSelecting.current) {
+      isSelecting.current = false;
       return;
     }
 
@@ -66,6 +71,25 @@ function App() {
     const debounceId = setTimeout(fetchSuggestions, 300);
     return () => clearTimeout(debounceId);
   }, [query]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowUp" && selection > 0 && selection < suggestions.length) {
+      setSelection((prev => prev - 1));
+    }
+    else if (e.key === "ArrowDown" && selection < suggestions.length) {
+      setSelection((prev => prev + 1));
+    }
+    else if (e.key === "Enter") {
+      e.preventDefault();
+      if (selection >= 0 && selection < suggestions.length) {
+        handleSuggestionClick(suggestions[selection]);
+      } else {
+        handleSearch(e);
+      }
+    } else {
+      setSelection(-1); // Reset selection on other keys
+    }
+  }
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -101,6 +125,7 @@ function App() {
   const handleSuggestionClick = (suggestion) => {
     setQuery(suggestion);
     setSuggestions([]);
+    isSelecting.current = true; // Indicate that a suggestion was selected
   };
 
   const totalPages = Math.ceil(results.length / 10);
@@ -128,16 +153,17 @@ function App() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Search Anything"
           className="search-input w-full"
         />
         {suggestions.length > 0 && (
-          <ul className="absolute z-10 translate-y-[40px] w-[295px] md:w-[730px] bg-white dark:bg-gray-500 mt-1 border border-gray-200 dark:border-gray-700 rounded-md max-h-60 overflow-auto">
+          <ul className="absolute z-10 translate-y-[40px] w-[295px] md:w-[730px] bg-white dark:bg-gray-500 mt-1 border border-gray-200 dark:border-gray-700 rounded-md overflow-auto">
             {suggestions.map((suggestion, index) => (
               <li
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                className={selection === index ? "px-4 py-2 bg-blue-400 cursor-pointer" : "px-4 py-2 bg-blue-950 cursor-pointer"}
               >
                 {suggestion}
               </li>
