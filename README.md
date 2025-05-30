@@ -20,6 +20,7 @@ Miniature Search Engine demonstrates a fully functional search engine complete w
 - **Web Crawling**: Automatically indexes web pages starting from a seed URL.
 - **Autocomplete**: Provides real-time suggestions as users type their search queries.
 - **Search Functionality**: Uses TF-IDF and PageRank to deliver relevant search results.
+  
 [to be implemented]: <> (- **Analytics**: Tracks and displays popular search queries.)
 
 ## Technologies Used
