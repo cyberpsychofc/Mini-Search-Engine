@@ -41,7 +41,7 @@ Miniature Search Engine demonstrates a fully functional search engine complete w
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/mini-search-engine.git
+   git clone https://github.com/cyberpsychofc/mini-search-engine.git
    ```
 2. Navigate to the backend directory:
    ```
