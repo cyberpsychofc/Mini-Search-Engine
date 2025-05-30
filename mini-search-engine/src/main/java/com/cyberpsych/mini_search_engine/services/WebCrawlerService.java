@@ -121,6 +121,12 @@ public class WebCrawlerService {
             try{
                 Set<String> links = extractLinks(currentPage.getUrl());
                 Document doc = fetchPage(currentPage.getUrl());
+
+                Element meta = doc.selectFirst("meta[name=description]");
+                String description = (meta != null) ? meta.attr("content") : null;
+                currentPage.setDescription(description);
+                pageRepository.save(currentPage);
+
                 List<String> tokens = textProcessorService.processText(doc.html());
                 logger.info("Processed {} tokens from {}: {}", tokens.size(), currentPage.getUrl(), tokens);
 

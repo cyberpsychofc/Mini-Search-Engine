@@ -199,7 +199,8 @@ function App() {
                   >
                     {result.url}
                   </a>
-                  <p>Match Score: {result.score.toFixed(2)}</p>
+                  <p className='text-sm'><i className='dark:text-gray-200'>{result.description}</i></p>
+                  <p className='pt-1'><b className='text-blue-300'>Match Score:</b> {result.score.toFixed(2)}</p>
                 </li>
               ))}
             </ul>
