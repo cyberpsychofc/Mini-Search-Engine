@@ -163,7 +163,7 @@ function App() {
               <li
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className={selection === index ? "px-4 py-2 bg-blue-400 cursor-pointer" : "px-4 py-2 bg-blue-950 cursor-pointer"}
+                className={selection === index ? "px-4 py-2 bg-blue-400 cursor-pointer" : "px-4 py-2 bg-blue-950 hover:bg-blue-400 cursor-pointer"}
               >
                 {suggestion}
               </li>
