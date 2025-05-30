@@ -4,9 +4,8 @@ body {
   padding-right: 18px;
   z-index: -1;
 }
-* {
- /*border: 1px solid #ff0000;*/
-  background-color: #101828;
+html {
+  background-color: #101828; 
 }
 
 .container {
