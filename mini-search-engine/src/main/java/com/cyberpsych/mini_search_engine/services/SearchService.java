@@ -104,6 +104,7 @@ public class SearchService {
                     page -> {
                         Map<String, Object> result = new HashMap<>();
                         result.put("url", page.getUrl());
+                        result.put("description", page.getDescription());
                         result.put("score", finalScore);
                         results.add(result);
                     }
