@@ -149,14 +149,20 @@ function App() {
       </h1>
 
       <form onSubmit={handleSearch} className="search-form relative">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Search Anything"
-          className="search-input w-full"
-        />
+          <img
+            src="/cross.svg"
+            alt="cross button"
+            onClick={() => setQuery('')}
+            className={query==="" ? "hidden" : "absolute right-20 top-1/2 transform -translate-y-1/2 w-6 h-6 cursor-pointer"}
+          />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Search Anything"
+            className="search-input w-full pl-10" 
+          />
         {suggestions.length > 0 && (
           <ul className="absolute z-10 translate-y-[40px] w-[295px] md:w-[730px] bg-white dark:bg-gray-500 mt-1 border border-gray-200 dark:border-gray-700 rounded-md overflow-auto">
             {suggestions.map((suggestion, index) => (
