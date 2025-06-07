@@ -28,6 +28,15 @@ html {
   border-radius: 4px;
 }
 
+@media (prefers-color-scheme: light){
+  .search-input{
+    background-color: #ffffff;
+  }
+  html {
+    background-color: #f3f4f6;    
+  }
+}
+
 .search-button {
   padding: 10px 20px;
   background-color: #002774;

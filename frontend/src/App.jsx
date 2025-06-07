@@ -169,7 +169,7 @@ function App() {
               <li
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className={selection === index ? "px-4 py-2 bg-blue-400 cursor-pointer" : "px-4 py-2 bg-blue-950 hover:bg-blue-400 cursor-pointer"}
+                className={selection === index ? "px-4 py-2 dark:bg-blue-400 cursor-pointer" : "px-4 py-2 dark:bg-blue-950 hover:bg-blue-400 cursor-pointer"}
               >
                 {suggestion}
               </li>
@@ -201,7 +201,7 @@ function App() {
                     href={result.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 underline"
+                    className="text-gray-200 dark:text-blue-400 underline"
                   >
                     {result.url}
                   </a>
